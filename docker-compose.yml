@@ -1,0 +1,58 @@
+version: "3"
+
+services:
+  # Serviço PHP/Laravel
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: catalogo-filmes-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - catalogo-filmes-network
+    depends_on:
+      - db
+
+  # Servidor Nginx
+  nginx:
+    image: nginx:alpine
+    container_name: catalogo-filmes-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - catalogo-filmes-network
+    depends_on:
+      - app
+
+  # Banco de dados MySQL
+  db:
+    image: mysql:8.0
+    container_name: catalogo-filmes-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: catalogo_filmes
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: user
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - catalogo-filmes-network
+
+networks:
+  catalogo-filmes-network:
+    driver: bridge
+
+volumes:
+  dbdata:
