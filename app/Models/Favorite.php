@@ -22,6 +22,7 @@ class Favorite extends Model
         'release_date',
         'vote_average',
         'user_id',
+        'genre_ids', 
     ];
 
     /**
@@ -31,5 +32,6 @@ class Favorite extends Model
      */
     protected $casts = [
         'vote_average' => 'float',
+        'genre_ids' => 'array',
     ];
 }
