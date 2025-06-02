@@ -1,0 +1,346 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API de Catálogo de Filmes",
+        "description": "API para gerenciamento de filmes favoritos",
+        "contact": {
+            "name": "Suporte API",
+            "email": "contato@exemplo.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/favorites": {
+            "get": {
+                "tags": [
+                    "Favoritos"
+                ],
+                "summary": "Lista todos os filmes favoritos",
+                "description": "Retorna uma lista de todos os filmes favoritos, com opção de filtrar por gênero",
+                "operationId": "getFavorites",
+                "parameters": [
+                    {
+                        "name": "genre_id",
+                        "in": "query",
+                        "description": "ID do gênero para filtrar",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "genre_ids",
+                        "in": "query",
+                        "description": "IDs dos gêneros para filtrar (múltiplos)",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de favoritos recuperada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Favorite"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Favoritos"
+                ],
+                "summary": "Adiciona um novo filme aos favoritos",
+                "description": "Armazena um novo filme na lista de favoritos",
+                "operationId": "storeFavorite",
+                "requestBody": {
+                    "description": "Dados do filme a ser adicionado aos favoritos",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tmdb_id",
+                                    "title"
+                                ],
+                                "properties": {
+                                    "tmdb_id": {
+                                        "description": "ID do filme no TMDB",
+                                        "type": "integer",
+                                        "example": 550
+                                    },
+                                    "title": {
+                                        "description": "Título do filme",
+                                        "type": "string",
+                                        "example": "Clube da Luta"
+                                    },
+                                    "poster_path": {
+                                        "description": "Caminho do poster do filme",
+                                        "type": "string",
+                                        "example": "/poster.jpg"
+                                    },
+                                    "overview": {
+                                        "description": "Sinopse do filme",
+                                        "type": "string",
+                                        "example": "Um homem deprimido que sofre de insônia..."
+                                    },
+                                    "release_date": {
+                                        "description": "Data de lançamento do filme",
+                                        "type": "string",
+                                        "example": "1999-10-15"
+                                    },
+                                    "vote_average": {
+                                        "description": "Média de votos do filme",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 8.4
+                                    },
+                                    "genre_ids": {
+                                        "description": "IDs dos gêneros do filme em formato JSON",
+                                        "type": "string",
+                                        "example": "[18, 53, 35]"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Filme adicionado aos favoritos com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Favorite"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Filme já está nos favoritos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Filme já está nos favoritos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Dados inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/favorites/{tmdb_id}": {
+            "delete": {
+                "tags": [
+                    "Favoritos"
+                ],
+                "summary": "Remove um filme dos favoritos",
+                "description": "Remove um filme da lista de favoritos pelo ID do TMDB",
+                "operationId": "destroyFavorite",
+                "parameters": [
+                    {
+                        "name": "tmdb_id",
+                        "in": "path",
+                        "description": "ID do filme no TMDB",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Filme removido dos favoritos com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Filme removido dos favoritos com sucesso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Filme não encontrado nos favoritos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Filme não encontrado nos favoritos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "FavoriteGenre": {
+                "title": "FavoriteGenre",
+                "description": "Modelo de gênero de filme favorito",
+                "properties": {
+                    "id": {
+                        "description": "ID único do gênero do favorito",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "favorite_id": {
+                        "description": "ID do favorito relacionado",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "genre_id": {
+                        "description": "ID do gênero no TMDB",
+                        "type": "integer",
+                        "example": 18
+                    },
+                    "created_at": {
+                        "description": "Data de criação do registro",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Data de atualização do registro",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "Favorite": {
+                "title": "Favorite",
+                "description": "Modelo de filme favorito",
+                "properties": {
+                    "id": {
+                        "description": "ID único do favorito",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "tmdb_id": {
+                        "description": "ID do filme no TMDB",
+                        "type": "integer",
+                        "example": 550
+                    },
+                    "title": {
+                        "description": "Título do filme",
+                        "type": "string",
+                        "example": "Clube da Luta"
+                    },
+                    "poster_path": {
+                        "description": "Caminho do poster do filme",
+                        "type": "string",
+                        "example": "/poster.jpg"
+                    },
+                    "overview": {
+                        "description": "Sinopse do filme",
+                        "type": "string",
+                        "example": "Um homem deprimido que sofre de insônia..."
+                    },
+                    "release_date": {
+                        "description": "Data de lançamento do filme",
+                        "type": "string",
+                        "format": "date",
+                        "example": "1999-10-15"
+                    },
+                    "vote_average": {
+                        "description": "Média de votos do filme",
+                        "type": "number",
+                        "format": "float",
+                        "example": 8.4
+                    },
+                    "genre_ids": {
+                        "description": "IDs dos gêneros do filme",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "example": "[18, 53, 35]"
+                    },
+                    "created_at": {
+                        "description": "Data de criação do registro",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Data de atualização do registro",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00.000000Z"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Favoritos",
+            "description": "Operações relacionadas aos filmes favoritos"
+        }
+    ]
+}

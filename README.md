@@ -143,6 +143,20 @@ DB_PASSWORD=root
 
 -   **DELETE /api/favorites/{tmdb_id}** - Remover um filme dos favoritos
 
+## Documentação da API (Swagger)
+
+O projeto inclui documentação da API usando Swagger/OpenAPI. Para acessar:
+
+1. Inicie o servidor Laravel: `php artisan serve`
+2. Acesse a documentação em: [http://localhost:8000/api/documentation](http://localhost:8000/api/documentation)
+
+A documentação permite:
+
+-   Visualizar todos os endpoints disponíveis
+-   Testar as requisições diretamente pela interface
+-   Verificar os formatos de entrada e saída de dados
+-   Entender os possíveis códigos de resposta
+
 ## Testes
 
 Para executar os testes automatizados:
