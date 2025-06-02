@@ -20,7 +20,6 @@ return new class extends Migration
             $table->date('release_date')->nullable();
             $table->float('vote_average')->nullable();
             $table->text('genre_ids')->nullable();
-            $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
         });
     }
