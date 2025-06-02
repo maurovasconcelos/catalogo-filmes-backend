@@ -14,13 +14,11 @@ class FavoriteController extends Controller
         
         if ($request->has('genre_id')) {
             $genreId = $request->genre_id;
-            $query->where('genre_ids', 'like', "%$genreId%");
-        }
-        
-        if ($request->has('genre_ids')) {
+            $query->whereJsonContains('genre_ids', $genreId);
+        } elseif ($request->has('genre_ids')) {
             $genreIds = explode(',', $request->genre_ids);
             foreach ($genreIds as $genreId) {
-                $query->where('genre_ids', 'like', "%$genreId%");
+                $query->whereJsonContains('genre_ids', $genreId);
             }
         }
         
@@ -45,6 +43,13 @@ class FavoriteController extends Controller
         
         if ($existingFavorite) {
             return response()->json(['message' => 'Filme já está nos favoritos'], 409);
+        }
+        
+        if (isset($validated['genre_ids']) && !empty($validated['genre_ids'])) {
+            json_decode($validated['genre_ids']);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $validated['genre_ids'] = json_encode($validated['genre_ids']);
+            }
         }
         
         $favorite = Favorite::create($validated);
